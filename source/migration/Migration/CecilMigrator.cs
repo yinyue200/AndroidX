@@ -96,7 +96,7 @@ namespace Xamarin.AndroidX.Migration
 						resolver.AddAssembly(reference);
 					}
 				}
-
+				reset:
 				var readerParams = new ReaderParameters
 				{
 					ReadSymbols = hasSymbols,
@@ -105,32 +105,41 @@ namespace Xamarin.AndroidX.Migration
 				};
 
 				LogVerboseMessage($"Processing assembly '{source}'...");
-				using (var assembly = AssemblyDefinition.ReadAssembly(destination, readerParams))
+				try
 				{
-					if (!hasSymbols)
-						LogVerboseMessage($"  No debug symbols found for the assembly.");
-
-					result = MigrateAssembly(assembly);
-
-					requiresSave =
-						result.HasFlag(CecilMigrationResult.ContainedSupport) ||
-						result.HasFlag(CecilMigrationResult.ContainedJni) ||
-						result.HasFlag(CecilMigrationResult.ContainedJavaArtifacts);
-
-					if (requiresSave)
+					using (var assembly = AssemblyDefinition.ReadAssembly(destination, readerParams))
 					{
-						assembly.Write(new WriterParameters
+						if (!hasSymbols)
+							LogVerboseMessage($"  No debug symbols found for the assembly.");
+
+						result = MigrateAssembly(assembly);
+
+						requiresSave =
+							result.HasFlag(CecilMigrationResult.ContainedSupport) ||
+							result.HasFlag(CecilMigrationResult.ContainedJni) ||
+							result.HasFlag(CecilMigrationResult.ContainedJavaArtifacts);
+
+						if (requiresSave)
 						{
-							WriteSymbols = hasSymbols,
-							SymbolWriterProvider = hasSymbols ? new PortablePdbWriterProvider() : null,
-						});
+							assembly.Write(new WriterParameters
+							{
+								WriteSymbols = hasSymbols,
+								SymbolWriterProvider = hasSymbols ? new PortablePdbWriterProvider() : null,
+							});
 
-						LogMessage($"Migrated assembly to '{destination}'.");
+							LogMessage($"Migrated assembly to '{destination}'.");
+						}
+						else
+						{
+							LogVerboseMessage($"Skipped assembly '{source}' due to lack of support types.");
+						}
 					}
-					else
-					{
-						LogVerboseMessage($"Skipped assembly '{source}' due to lack of support types.");
-					}
+				}
+				catch (Mono.Cecil.Cil.SymbolsNotMatchingException)
+				{
+					LogMessage($"Symbols were found but are not matching the assembly({source})");
+					hasSymbols = false;
+					goto reset;
 				}
 			}
 

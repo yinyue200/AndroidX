@@ -6,6 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Tools\JetifierWrapper\jetifierWrapper-1.0.jar" />
+    <None Remove="Tools\Mappings\androidx-mapping.csv" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ILRepack.Lib" Version="2.0.18" NoWarn="NU1701" />
     <PackageReference Include="Mono.Cecil" Version="0.11.1" />
   </ItemGroup>
@@ -13,13 +18,12 @@
   <ItemGroup>
     <Content Include="..\..\..\mappings\androidx-assemblies.csv" Link="Tools\Mappings\androidx-assemblies.csv" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="..\..\..\mappings\androidx-class-mapping.csv" Link="Tools\Mappings\androidx-class-mapping.csv" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\..\..\output\mappings\androidx-mapping.csv" Link="Tools\Mappings\androidx-mapping.csv" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\..\..\output\mappings\dependencies.json" Link="Tools\Mappings\dependencies.json" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\..\..\output\JetifierWrapper\jetifierWrapper-1.0.jar" Link="Tools\JetifierWrapper\jetifierWrapper-1.0.jar" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Tools\JetifierWrapper\jetifierWrapper-1.0.jar" />
+    <Content Include="Tools\Mappings\androidx-mapping.csv" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\externals\java.interop\java.interop\src\Xamarin.Android.Tools.Bytecode\Xamarin.Android.Tools.Bytecode.csproj" />
+    <ProjectReference Include="..\..\..\..\XamarinAndroidXMigration\externals\Java.Interop\src\Xamarin.Android.Tools.Bytecode\Xamarin.Android.Tools.Bytecode.csproj" />
   </ItemGroup>
 
 </Project>
